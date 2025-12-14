@@ -1,15 +1,16 @@
-# spinqit-mcp-server Installation Guide
+# spinqit_mcp_tools Installation Guide
 
 <div align="right">
   <a href="README_zh.md">中文</a> | 
   <a href="README.md">English</a>
 </div>
+This project is based on mcp-server to support efficient invocation of spinq's quantum computing hardware resources by AI large models.
 
-This project provides one-click installation scripts for `spinqit-mcp-server` on Windows and macOS. These scripts automatically check the Python environment (requires Python 3.10 or higher) and install the required `spinqit_task_manager` dependency package. If no suitable Python environment is found, the scripts will attempt to create one using Conda or guide users to manually install Python.
+This project provides one-click installation scripts for `spinqit_mcp_tools` on Windows and macOS. These scripts automatically check the Python environment (requires Python 3.10 or higher) and install the required `spinqit_mcp_tools` dependency package. If no suitable Python environment is found, the scripts will attempt to create one using Conda or guide users to manually install Python.
 
 ## Table of Contents
 - [Prerequisites](#prerequisites)
-
+- [Manual Installation](#manual-installation)
 - [Script Installation Steps](#script-installation-steps)
 
   - [Windows](#windows)
@@ -20,21 +21,45 @@ This project provides one-click installation scripts for `spinqit-mcp-server` on
 
   - [Troubleshooting](#troubleshooting)
 
-- [Manual Installation Steps](#manual-installation-steps)
-
+- [cursor](#cursor)
+- [vscode-cline](#vscode-cline)
 - [License](#license)
 
 
 ## Prerequisites
 
 Before running the installation scripts, ensure the following requirements are met:
-- **Python 3.10 or higher**: `spinqit-mcp-server` requires Python 3.10 or later.
+- **Python 3.10 or higher**: `spinqit_mcp_tools` requires Python 3.10 or later.
 
 - **Conda (optional)**: If Python 3.10 is not installed, the scripts can use Anaconda to create an environment. Download it from [Anaconda](https://www.anaconda.com/download).
 
-- **Internet connection**: Required for downloading the `spinqit_task_manager` package via `pip`.
+- **Internet connection**: Required for downloading the `spinqit_mcp_tools` package via `pip`.
 
 - **macOS terminal permissions**: Ensure the terminal supports `bash`.
+
+## Manual Installation
+
+If you prefer not to use the script for installation, you can manually install spinqit_mcp_tools. Follow the steps below. The only difference is that the script installation will display your Python path and the full command to launch the program at the end, which is helpful for beginners to configure:
+
+- **​​Install Python 3.10 or later**​​:
+  - Download and install Python 3.10 or later from the [Python official website](https://www.python.org/downloads/). Alternatively, use Anaconda to install Python.
+
+- ​**​Install spinqit_mcp_tools​**​:
+  - Open a terminal or command prompt and run the following command:
+    ```bash
+      pip install spinqit_mcp_tools
+      ``` 
+
+- **Verify successful installation**:
+  - In the terminal or command prompt, run the following command to check if it executes successfully:
+    ```bash
+      python -m spinqit_mcp_tools.qasm_submitter
+      ```
+  - If you see the message "FastMCP initialized successfully, Tool registered," the installation was successful.
+
+- **​​Configure the MCP server​​**:
+  - 
+
 
 
 ## Script Installation Steps
@@ -51,7 +76,7 @@ Before running the installation scripts, ensure the following requirements are m
 
 
 3. **Script Behavior**
-   - **If Python 3.10 or higher is already installed**: The script will directly install the `spinqit_task_manager` package and output the Python environment path and the `mcp-server` execution command.
+   - **If Python 3.10 or higher is already installed**: The script will directly install the `spinqit_mcp_tools` package and output the Python environment path and the `mcp-server` execution command.
 
    - **If Python 3.10 is not installed but Conda is available**: The script will create a Conda environment named `mcp-server-py310` (using Python 3.10), install the dependencies, and output the environment path and execution command.
 
@@ -61,7 +86,7 @@ Before running the installation scripts, ensure the following requirements are m
 4. **Successful Installation**
     - ![alt text](image-6.png)
 
-    - Note the execution command (e.g., `C:\ProgramData\Anaconda3\envs\mcp-server-py310\python.exe -m spinqit_task_manager.qasm_submitter` in this example) and register an account at [cloud.spinq.cn](https://cloud.spinq.cn) to configure your public key.
+    - Note the execution command (e.g., `C:\ProgramData\Anaconda3\envs\mcp-server-py310\python.exe -m spinqit_mcp_tools.qasm_submitter` in this example) and register an account at [cloud.spinq.cn](https://cloud.spinq.cn) to configure your public key.
     
     - input the execution command, PRIVATEKEYPATH , SPINQCLOUDUSERNAME to your mcp server setting
 
@@ -83,7 +108,7 @@ Before running the installation scripts, ensure the following requirements are m
 3. **Script Behavior**
    - Similar to the Windows script, the macOS script will:
 
-     - Check for Python 3.10 or higher. If found, it will install `spinqit_task_manager`.
+     - Check for Python 3.10 or higher. If found, it will install `spinqit_mcp_tools`.
 
      - If Python 3.10 is not found, it will check for Conda and create a `mcp-server-py310` environment.
 
@@ -101,12 +126,12 @@ After successful execution, the script will output the following information:
 
 - **mcp-server execution command**: The command to run `mcp-server`, e.g.:
 
-  - Windows: `C:\path\to\conda\envs\mcp-server-py310\python.exe -m spinqit_task_manager.qasm_submitter`
+  - Windows: `C:\path\to\conda\envs\mcp-server-py310\python.exe -m spinqit_mcp_tools.qasm_submitter`
 
-  - macOS: `/path/to/conda/envs/mcp-server-py310/bin/python -m spinqit_task_manager.qasm_submitter`
+  - macOS: `/path/to/conda/envs/mcp-server-py310/bin/python -m spinqit_mcp_tools.qasm_submitter`
 
 
-Save this information for configuring and running `spinqit-mcp-server`.
+Save this information for configuring and running `spinqit_mcp_tools`.
 
 ### Troubleshooting
 
@@ -132,7 +157,7 @@ Save this information for configuring and running `spinqit-mcp-server`.
 ### Usage
 - Use the Python installation directory to run:
 
-  - `/pathtopython/python -m spinqit_task_manager.qasm_submitter`
+  - `/pathtopython/python -m spinqit_mcp_tools.qasm_submitter`
 
 
 ### Environment Testing (Create and submit a 2-qubit quantum circuit QASM to the cloud platform and view results)
@@ -158,7 +183,7 @@ Save this information for configuring and running `spinqit-mcp-server`.
             "/C",
             "C:\\Users\\ylin\\.conda\\envs\\mcp-server-py310\\python.exe",
             "-m",
-            "spinqit_task_manager.qasm_submitter"
+            "spinqit_mcp_tools.qasm_submitter"
           ],
           "env": {
             "PRIVATEKEYPATH":"<Your Privatekey Path>",
@@ -185,7 +210,7 @@ Save this information for configuring and running `spinqit-mcp-server`.
             "/C",
             "C:\\Users\\ylin\\.conda\\envs\\mcp-server-py310\\python.exe",
             "-m",
-            "spinqit_task_manager.qasm_submitter"
+            "spinqit_mcp_tools.qasm_submitter"
           ],
           "env": {
             "PRIVATEKEYPATH": "<Your Privatekey Path>",
@@ -203,11 +228,6 @@ Save this information for configuring and running `spinqit-mcp-server`.
 
    ![alt text](image-3.png)
 
-
-## Manual Installation Steps
-- Install Python 3.10 or higher, then run: `pip install spinqit_task_manager`
-
-- Configure `python -m spinqit_task_manager.qasm_submitter` as the mcp-client startup command.
 
 
 ## License

@@ -3,7 +3,7 @@
 # 定义函数：创建并激活 conda 环境
 create_and_activate_conda_env() {
     CONDA_BASE=$(conda info --base)
-    echo "检测到 conda，查看是否已经安装 mcp-server 环境与 spinqit_task_manager 依赖"
+    echo "检测到 conda，查看是否已经安装 mcp-server 环境与 spinqit_mcp_tools 依赖"
     echo "$CONDA_BASE"
 
     echo "检测到 conda，正在创建 python 3.10 的环境..."
@@ -17,9 +17,9 @@ create_and_activate_conda_env() {
     # 激活 conda 环境
     source "${CONDA_BASE}/etc/profile.d/conda.sh"
     conda activate mcp-server-py310
-    pip install spinqit_task_manager
+    pip install spinqit_mcp_tools
     if [ $? -ne 0 ]; then
-        echo "安装 spinqit_task_manager 失败，请检查网络或 pip 配置。"
+        echo "安装 spinqit_mcp_tools 失败，请检查网络或 pip 配置。"
         read -p "按 Enter 继续..."
         exit 1
     fi
@@ -28,7 +28,7 @@ create_and_activate_conda_env() {
     PYTHON_PATH=$(which python3)
     SITE_PACKAGES=$(python3 -c "import site; print(site.getsitepackages()[0])")
     echo "Python 环境路径: $PYTHON_PATH"
-    echo "mcp-server 的执行命令为：$PYTHON_PATH -m spinqit_task_manager.qasm_submitter"
+    echo "mcp-server 的执行命令为：$PYTHON_PATH -m spinqit_mcp_tools.qasm_submitter"
     echo "用户名与私钥信息请访问cloud.spinq.cn进行获取，并设置到mcp-server的配置文件中"
     read -p "按 Enter 继续..."
     exit 0
@@ -50,18 +50,26 @@ main() {
 
     if [ "$PY_MAJOR" -eq 3 ] && [ "$PY_MINOR" -ge 10 ]; then
         echo "python >= 3.10"
-        echo "Python 版本符合要求，继续安装..."
-        python3 -m pip install spinqit_task_manager
-        if [ $? -ne 0 ]; then
-            echo "安装 spinqit_task_manager 失败，请检查网络或 pip 配置。"
-            read -p "按 Enter 继续..."
-            exit 1
+        echo "确定是否有conda，优先创建conda环境"
+        CONDA_OUTPUT=$(conda --version 2>&1)
+        if [[ "$CONDA_OUTPUT" == *"command not found"* ]] || [[ "$CONDA_OUTPUT" == *"not recognized"* ]]; then
+            echo "没有conda环境，Python 版本符合要求，继续安装..."
+            python3 -m pip install spinqit_mcp_tools
+            if [ $? -ne 0 ]; then
+                echo "安装 spinqit_mcp_tools 失败，请检查网络或 pip 配置。"
+                read -p "按 Enter 继续..."
+                exit 1
+            fi
+        else
+            echo "conda 已安装，版本: $CONDA_OUTPUT"
+            create_and_activate_conda_env
         fi
+        
         echo "*****安装完成！请记录以下内容，用于 mcp-server 配置*****"
         PYTHON_PATH=$(which python3)
         SITE_PACKAGES=$(python3 -c "import site; print(site.getsitepackages()[0])")
         echo "Python 环境路径: $PYTHON_PATH"
-        echo "mcp-server 的执行命令为：$PYTHON_PATH -m spinqit_task_manager.qasm_submitter"
+        echo "mcp-server 的执行命令为：$PYTHON_PATH -m spinqit_mcp_tools.qasm_submitter"
         echo "用户名与私钥信息请访问cloud.spinq.cn进行获取，并设置到mcp-server的配置文件中"
         read -p "按 Enter 继续..."
         exit 0

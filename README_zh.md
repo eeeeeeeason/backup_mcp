@@ -1,32 +1,83 @@
-# spinqit-mcp-server 安装指南
+# spinqit_mcp_tools 安装指南
 
 <div align="right">
   <a href="README_zh.md">中文</a> | 
   <a href="README.md">English</a>
 </div>
+本项目基于mcp-server来支持ai大模型高效调用spinq的量子计算硬件资源。
 
-本项目提供适用于 **Windows** 和 **macOS** 的 `spinqit-mcp-server` 一键安装脚本。这些脚本会自动检查 Python 环境（需 3.10 或更高版本）并安装所需的 `spinqit_task_manager` 依赖包。如果系统中没有合适的 Python 环境，脚本会尝试使用 **Conda** 创建环境，或引导用户手动安装 Python。
+提供适用于 **Windows** 和 **macOS** 的 `spinqit_mcp_tools` 一键安装脚本。这些脚本会自动检查 Python 环境（需 3.10 或更高版本）并安装所需的 `spinqit_mcp_tools` 依赖包。如果系统中没有合适的 Python 环境，脚本会尝试使用 **Conda** 创建环境，或引导用户手动安装 Python。
 
 ## 目录
 - [前置条件](#前置条件)
+- [自行安装](#自行安装)
 - [脚本安装步骤](#脚本安装步骤)
   - [Windows](#windows)
   - [macOS](#macos)
-  - [输出结果](#输出结果)
   - [故障排除](#故障排除)
-- [手动安装步骤](#手动安装步骤)
+- [cursor测试](#cursor测试)
+- [vscode-cline测试](#vscode-cline测试)
 - [许可证](#许可证)
 
 ## 前置条件
 
 在运行安装脚本之前，请确保满足以下条件：
-- **Python 3.10 或更高版本**：`spinqit-mcp-server` 要求 Python 3.10 或以上版本。
+- **Python 3.10 或更高版本**：`spinqit_mcp_tools` 要求 Python 3.10 或以上版本。
 - **Conda（可选）**：如果系统中没有 Python 3.10，脚本可使用 Anaconda 创建环境。请从 [Anaconda](https://www.anaconda.com/download)下载。
-- **网络连接**：需要联网以通过 `pip` 下载 `spinqit_task_manager` 依赖包。
+- **网络连接**：需要联网以通过 `pip` 下载 `spinqit_mcp_tools` 依赖包。
 - **macOS 终端权限**：确保终端支持 `bash`。
 
-## 脚本安装步骤
+## 自行安装
 
+如果您不想使用脚本安装，可以手动安装 `spinqit_mcp_tools`。请按照以下步骤操作，区别仅在于脚本安装会在最终告诉你所在的python路径和启动程序的完整命令方便新手配置：
+
+1. **安装 Python 3.10 或更高版本**：
+    - 从 [Python 官网](https://www.python.org/downloads/) 下载并安装 Python 3.10 或更高版本。或者使用 Anaconda 安装 Python。
+2. **安装 `spinqit_mcp_tools`**：
+    - 打开终端或命令提示符，运行以下命令：
+      ```bash
+      pip install spinqit_mcp_tools
+      ``` 
+3. **测试安装成功**：
+    - 在终端或命令提示符中运行以下命令，检查是否能成功执行：
+      ```bash
+      python -m spinqit_mcp_tools.qasm_submitter
+      ```
+    - 如果看到"FastMCP initialized successfully ,Tool registered"信息，则表示安装成功。
+4. **配置 MCP 服务器**：
+    - python获取
+      - 如果系统中有多个python版本需要指定python路径配置
+      - 执行获取路径的配置：python -c "import sys; print(sys.executable)"
+      - 得到C:\Users\ylin\.conda\envs\mcp-server-py310\python.exe ，注意在编辑器的配置文件中json需要转义路径层级符号\ -> \\ ，因此输入配置的路径最终为C:\\Users\\ylin\\.conda\\envs\\mcp-server-py310\\python.exe
+    - 确认您已在 [SpinQ Cloud](https://cloud.spinq.cn) 注册账号，在本机配置了您的公钥并绑定到[cloud.spinq.cn/userInfo](https://cloud.spinq.cn/userInfo)用户中心，填写PRIVATEKEYPATH和SPINQCLOUDUSERNAME到下方env环境中。
+    - 不同的编辑器中如cursor的设置中搜索MCP：
+      ```json
+      {
+        "mcpServers": {
+          "spinqit_mcp_tools": {
+            "disabled": false,
+            "timeout": 60,
+            "transportType": "stdio",
+            "command": "C:\\Users\\ylin\\.conda\\envs\\mcp-server-py310\\python.exe",
+            "args": [
+              "-m",
+              "spinqit_mcp_tools.qasm_submitter"
+            ],
+            "env": {
+              "PRIVATEKEYPATH": "C:\\Users\\ylin\\.ssh\\id_rsa",
+              "SPINQCLOUDUSERNAME": "a492760446"
+            }
+          }
+        }
+      }
+      ```
+5. **具体使用**
+    - [cursor测试](#cursor测试)
+    - [vscode-cline测试](#vscode-cline测试)
+
+   
+## 脚本安装步骤
+适用于对环境不熟悉的新手，会在安装成功后输出完整的配置
 ### Windows
 
 1. **下载脚本**
@@ -36,14 +87,10 @@
 2. **运行脚本**
    - 双击mcpenv-installer-win-x86_64.bat，运行安装
 
-3. **脚本行为**
-   - **如果系统中已安装 Python 3.10 或更高版本**：脚本将直接安装 `spinqit_task_manager` 依赖包，并输出 Python 环境路径和 `mcp-server` 的执行命令。
-   - **如果没有 Python 3.10 但已安装 Conda**：脚本会创建一个名为 `mcp-server-py310` 的 Conda 环境（使用 Python 3.10），安装依赖包，并输出环境路径和执行命令。
-   - **如果既没有 Python 3.10 也没有 Conda**：脚本会提示您从 [Python 官网](https://www.python.org/downloads/) 或 [Anaconda 官网](https://www.anaconda.com/download) 下载并安装 Python 3.10 或 Conda，安装后再重新运行脚本。
+3. **运行结果**
+   - 输出成功提示与完整的mcp_server配置项，记录并配置到所需要的编辑器（如cursor）中
+   - ![alt text](image-7.png)
 
-4. **安装成功**
-    - ![alt text](image-6.png)
-    - 记录执行的命令（如我这里的C:\ProgramData\Anaconda3\envs\mcp-server-py310\python.exe -m spinqit_task_manager.qasm_submitter），并且到cloud.spinq.cn注册账号配置您的公钥
 
 ### macOS
 
@@ -58,69 +105,41 @@
      sudo bash ./mcpenv-installer-mac.sh
      ```
 
-3. **脚本行为**
-   - 与 Windows 脚本类似，macOS 脚本会：
-     - 检查是否存在 Python 3.10 或更高版本，如果存在则安装 `spinqit_task_manager`。
-     - 如果没有 Python 3.10，检查 Conda 是否存在，并创建一个 `mcp-server-py310` 环境。
-     - 如果既没有 Python 3.10 也没有 Conda，提示用户安装 Python 3.10 或 Conda，然后重新运行脚本。
-
-### 输出结果
-
-脚本成功运行后，将输出以下信息：
-- **Python 环境路径**：使用的 Python 可执行文件路径，例如：
-  - Windows：`C:\path\to\conda\envs\mcp-server-py310\python.exe`
-  - macOS：`/path/to/conda/envs/mcp-server-py310/bin/python`
-- **mcp-server 执行命令**：运行 `mcp-server` 的命令，例如：
-  - Windows：`C:\path\to\conda\envs\mcp-server-py310\python.exe -m spinqit_task_manager.qasm_submitter`
-  - macOS：`/path/to/conda/envs/mcp-server-py310/bin/python -m spinqit_task_manager.qasm_submitter`
-
-请保存这些信息，用于配置和运行 `spinqit-mcp-server`。
-
-### 故障排除
-
-- **未找到 Python 或版本低于 3.10**：
-  - 从 [Python 官网](https://www.python.org/downloads/) 下载并安装 Python 3.10，确保添加到 PATH。
-  - 安装完成后重新运行脚本。
-- **Conda 未被识别**：
-  - 在没有python 3.10以上版本时确保已安装 Anaconda，并将其添加到 PATH。
-- **pip 安装失败**：
-  - 检查网络连接是否正常。
-- **Conda 环境创建失败**：
-  - 检查 Conda 安装是否完整，或从 [Anaconda 官网](https://www.anaconda.com/download) 重新安装。
+3. **运行结果**
+   - 输出成功提示与完整的mcp_server配置项，记录并配置到所需要的编辑器（如cursor）中
+   - ![alt text](image-7.png)
 
 
-### 使用
-- 根据python安装目录使用：
-  - /pathtopython/python -m spinqit_task_manager.qasm_submitter
+### cursor测试 
+- 打开配置
+  ![alt text](image-4.png)
+- 配置方式
+  ![alt text](image-7.png)
 
-### 环境测试情况 （创建并提交一个2比特量子线路qasm到云平台，并查看结果）
-- cursor
-  - 配置方式
-   ![alt text](image-7.png)
-  - 结果
-   ![alt text](image-5.png)
-  - 配置项
-    ```
-    {
-      "mcpServers": {
-        "qasm-submitter": {
-          "type": "stdio",
-          "command": "cmd",
-          "args": [
-            "/C",
-            "C:\\Users\\ylin\\.conda\\envs\\mcp-server-py310\\python.exe",
-            "-m",
-            "spinqit_task_manager.qasm_submitter"
-          ],
-          "env": {
-            "PRIVATEKEYPATH":"C:\\Users\\ylin\\.ssh\\id_rsa",
-            "SPINQCLOUDUSERNAME":"a492760446"
-          }
+- 配置项
+  ```
+  {
+    "mcpServers": {
+      "qasm-submitter": {
+        "type": "stdio",
+        "command": "C:\\Users\\ylin\\.conda\\envs\\mcp-server-py310\\python.exe",
+        "args": [
+          "-m",
+          "spinqit_mcp_tools.qasm_submitter"
+        ],
+        "env": {
+          "PRIVATEKEYPATH":"C:\\Users\\ylin\\.ssh\\id_rsa",
+          "SPINQCLOUDUSERNAME":"a492760446"
         }
       }
     }
-    ```
+  }
+  ```
+- 配置成功后，可以进行提问：“创建并提交一个3比特贝尔态量子线路qasm到云平台，并查看结果
+  - 结果
+    ![alt text](image-5.png)
 
+### vscode cline测试情况 
 - vscode cline插件
   - 配置项：
     ```
@@ -130,12 +149,10 @@
           "disabled": false,
           "timeout": 60,
           "transportType": "stdio", 
-          "command": "cmd",
+          "command": "C:\\Users\\ylin\\.conda\\envs\\mcp-server-py310\\python.exe",
           "args": [
-            "/C",
-            "C:\\Users\\ylin\\.conda\\envs\\mcp-server-py310\\python.exe",
             "-m",
-            "spinqit_task_manager.qasm_submitter"
+            "spinqit_mcp_tools.qasm_submitter"
           ],
           "env": {
             "PRIVATEKEYPATH": "C:\\Users\\ylin\\.ssh\\id_rsa",
@@ -150,9 +167,19 @@
   - 结果
    ![alt text](image-3.png)
 
-## 手动安装步骤
-- python3.10以上版本， pip install spinqit_task_manager
-- 配置python -m spinqit_task_manager.qasm_submitter为mcp-client启动命令
+
+### 故障排除
+
+- **未找到 Python 或版本低于 3.10**：
+  - 从 [Python 官网](https://www.python.org/downloads/) 下载并安装 Python 3.10，确保添加到 PATH。
+  - 安装完成后重新运行脚本。
+- **Conda 未被识别**：
+  - 在没有python 3.10以上版本时确保已安装 Anaconda，并将其添加到 PATH。
+- **pip 安装失败**：
+  - 检查网络连接是否正常。
+- **Conda 环境创建失败**：
+  - 检查 Conda 安装是否完整，是否正在被使用，或从 [Anaconda 官网](https://www.anaconda.com/download) 重新安装。
+  - 检查是否内存不足，存储空间不足等导致异常
 
 ## 许可证
 
